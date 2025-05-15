@@ -89,6 +89,9 @@ export type GlobalState = {
 	avg: number;
 	// Memory function
 	memory: Array<MemoryItem | RefMemoryItem | LM3MemoryItem>;
+	// API URL y token para enviar datos
+	apiUrl?: string;
+	csrfToken?: string;
 };
 
 const LOCAL_STORAGE_KEY = 'olm_settings';
@@ -128,6 +131,9 @@ const initialState: GlobalState = {
 		wave: [],
 	},
 	res_battery_level: -1,
+	// API URL y token para OpenRed
+	apiUrl: '',
+	csrfToken: '',
 	// Settings
 	hz: 1,
 	avg: 1,
@@ -139,7 +145,7 @@ const initialState: GlobalState = {
 
 const { useGlobalState: _useGlobalState, getGlobalState, setGlobalState } = createGlobalState(initialState);
 
-type ConfigKey = 'avg' | 'hz' | 'memory';
+type ConfigKey = 'avg' | 'hz' | 'memory' | 'apiUrl' | 'csrfToken';
 
 type SetStateAction<S> = S | ((prevState: S) => S);
 function useGlobalState<StateKey extends keyof GlobalState>(
@@ -150,7 +156,7 @@ function useGlobalState<StateKey extends keyof GlobalState>(
 	const setAndSaveValue = (value: Parameters<typeof setValue>[0]) => {
 		setValue(value);
 
-		if (['hz', 'avg', 'memory'].includes(key)) {
+		if (['hz', 'avg', 'memory', 'apiUrl', 'csrfToken'].includes(key)) {
 			// Defer saving to not disturb the render loop.
 			setTimeout(() => {
 				saveConfig();
@@ -166,6 +172,8 @@ function saveConfig() {
 		hz: getGlobalState('hz'),
 		avg: getGlobalState('avg'),
 		memory: getGlobalState('memory'),
+		apiUrl: getGlobalState('apiUrl'),
+		csrfToken: getGlobalState('csrfToken'),
 	};
 	localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(config));
 }
